@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root{--forest:#173b2b;--green:#2e7152;--mint:#eaf3ed;--cream:#f7f5ef;--white:#fff;--ink:#17251e;--muted:#66776e;--line:#dce5df;--orange:#c66d32;--red:#b5453c}
+    *{box-sizing:border-box}body{margin:0;font:14px Arial,sans-serif;background:var(--cream);color:var(--ink)}
+    button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.app{min-height:100vh}.top{height:64px;background:var(--forest);color:white;display:flex;align-items:center;padding:0 26px;gap:15px;position:sticky;top:0;z-index:5}.brand{font:700 23px Georgia,serif}.mode{font-size:11px;border:1px solid #ffffff55;border-radius:30px;padding:5px 9px}.status{margin-left:auto;font-size:12px;color:#d8e7de}
+    .shell{display:grid;grid-template-columns:220px 1fr;max-width:1600px;margin:auto}.side{padding:22px 12px;border-right:1px solid var(--line);background:#fff;min-height:calc(100vh - 64px);position:sticky;top:64px}.side small{display:block;color:var(--muted);font-weight:bold;text-transform:uppercase;letter-spacing:.1em;padding:0 12px 8px}.nav{width:100%;display:flex;align-items:center;gap:10px;text-align:left;border-radius:10px;padding:11px 12px;background:transparent;color:var(--ink);margin-bottom:4px}.nav:hover{background:var(--mint)}.nav.active{background:var(--forest);color:white}.icon{width:22px;text-align:center}
+    main{padding:28px;min-width:0}.heading{display:flex;align-items:end;justify-content:space-between;gap:15px;margin-bottom:20px}.heading h1{font:700 34px Georgia,serif;margin:0 0 5px}.heading p{color:var(--muted);margin:0}.primary,.secondary,.small{border-radius:9px;font-weight:bold;padding:10px 14px}.primary{background:var(--green);color:white}.secondary{background:var(--mint);color:var(--forest)}.small{padding:7px 10px;background:var(--mint);color:var(--forest);font-size:12px}
+    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{background:white;border:1px solid var(--line);border-radius:14px;padding:17px;box-shadow:0 8px 28px #173b2b0a}.metric label{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em}.metric strong{display:block;font:700 28px Georgia,serif;margin:8px 0 4px}.metric small{color:var(--muted)}
+    .tasks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:20px}.task{text-align:left;background:white;border:1px solid var(--line);border-radius:14px;padding:18px;color:var(--ink)}.task:hover{border-color:var(--green);transform:translateY(-1px)}.task .big{font-size:24px}.task b{display:block;font:700 19px Georgia,serif;margin:10px 0 5px}.task span{color:var(--muted);line-height:1.45}
+    .section{margin-top:22px}.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.section-head h2{font:700 23px Georgia,serif;margin:0}.filter{display:flex;gap:8px;flex-wrap:wrap}.filter input,.filter select{padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:white;min-width:190px}
+    .list{display:grid;gap:9px}.row{display:grid;grid-template-columns:minmax(180px,1.6fr) repeat(3,minmax(100px,1fr)) auto;gap:12px;align-items:center;background:white;border:1px solid var(--line);border-radius:12px;padding:13px 15px}.row b{display:block}.row small{color:var(--muted)}.value label{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;margin-bottom:3px}.money{font-weight:bold}.tag{display:inline-block;border-radius:20px;padding:4px 8px;background:var(--mint);color:var(--green);font-size:11px;font-weight:bold}.tag.buy{background:#fff0e6;color:var(--orange)}.tag.alert{background:#fdeceb;color:var(--red)}
+    .recipe-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.recipe{background:white;border:1px solid var(--line);border-radius:14px;padding:17px}.recipe .cat{color:var(--green);font-size:11px;font-weight:bold;text-transform:uppercase}.recipe h3{font:700 21px Georgia,serif;margin:8px 0}.recipe .meta{display:flex;gap:8px;flex-wrap:wrap}.recipe .ingredients{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);line-height:1.8;color:var(--muted)}
+    .empty{text-align:center;padding:45px;color:var(--muted);background:white;border:1px solid var(--line);border-radius:14px}.notice{padding:11px 14px;border-radius:10px;background:#fff4d9;color:#765817;margin-bottom:16px}.hidden{display:none!important}
+    dialog{border:0;border-radius:16px;padding:0;width:min(720px,94vw);box-shadow:0 30px 100px #0005}dialog::backdrop{background:#11281dbb}.modal{padding:22px}.modal h2{font:700 27px Georgia,serif;margin:0 0 5px}.modal>p{color:var(--muted);margin:0 0 18px}.form{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field label{display:block;font-size:11px;font-weight:bold;color:var(--muted);text-transform:uppercase;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;padding:11px;border:1px solid #cbd7cf;border-radius:8px;background:white}.field textarea{min-height:90px}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+    .forecast-row{grid-template-columns:minmax(220px,2fr) 130px repeat(2,minmax(130px,1fr))}.forecast-row input{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px}.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}.tasks,.recipe-grid{grid-template-columns:repeat(2,1fr)}.row{grid-template-columns:1.5fr 1fr 1fr auto}.row .optional{display:none}}
+    @media(max-width:760px){.shell{display:block}.side{position:sticky;top:64px;min-height:0;display:flex;overflow:auto;padding:8px;border-right:0;border-bottom:1px solid var(--line);z-index:4}.side small{display:none}.nav{width:auto;white-space:nowrap;margin:0 3px}.nav .icon{display:none}main{padding:16px}.heading h1{font-size:28px}.heading{align-items:start}.grid,.tasks,.recipe-grid,.two{grid-template-columns:1fr}.row,.forecast-row{grid-template-columns:1fr auto}.row .value,.forecast-row .value{display:none}.form{grid-template-columns:1fr}.top{padding:0 15px}.mode{display:none}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><div class="brand">Farm to Cups</div><span class="mode">Planning workspace</span><span class="status" id="sync">Connecting to Google Sheet…</span></header>
+  <div class="shell">
+    <aside class="side" id="nav"></aside>
+    <main><div id="notice" class="notice hidden"></div><div class="heading"><div><h1 id="pageTitle"></h1><p id="pageSub"></p></div><div id="pageAction"></div></div><div id="content"></div></main>
+  </div>
+</div>
+<dialog id="modal"><form method="dialog" class="modal" onsubmit="submitForm(event)"><h2 id="modalTitle"></h2><p id="modalHelp"></p><div class="form" id="fields"></div><div class="actions"><button class="secondary" value="cancel">Cancel</button><button class="primary" value="default">Save</button></div></form></dialog>
+<script>
+const pages=[
+ ["home","⌂","Home","Today’s priorities and shortcuts"],
+ ["costs","₹","Costs","Ingredients and packaging"],
+ ["menu","☕","Menu & margins","Prices, costs and profit"],
+ ["forecast","↗","Sales forecast","Plan expected sales"],
+ ["buy","✓","What to buy","Purchase recommendations"],
+ ["recipes","▤","Recipe book","Recipes and scaling"],
+ ["daily","+","Daily logs","Production and waste"],
+ ["sops","?","SOPs","Operating procedures"]
+];
+const forms={
+ ingredient:{sheet:"Ingredients",key:"Ingredient ID",title:"Ingredient",help:"Enter the pack you buy. Unit cost is calculated automatically.",fields:["Ingredient ID","Ingredient Name","Category","Vendor","Purchase Qty","Purchase Unit","Base Unit","Purchase Price ex GST","GST %","Current Stock","Minimum Stock","Reorder Level","Lead Time Days","Active"]},
+ packaging:{sheet:"Packaging",key:"Packaging ID",title:"Packaging item",help:"Add cups, lids, straws, sleeves or takeaway bags.",fields:["Packaging ID","Packaging Name","Type","Purchase Qty","Purchase Price ex GST","Current Stock","Reorder Level","Active"]},
+ production:{sheet:"Production Log",log:true,title:"Production",help:"Record a batch you planned or produced.",fields:["Date","Batch ID","Batch Name","Planned Qty","Actual Qty","Unit","Cost","Notes"]},
+ waste:{sheet:"Waste Log",log:true,title:"Waste",help:"Record waste so its value can be tracked.",fields:["Date","Item Type","Item ID","Item Name","Quantity","Unit","Reason","Unit Cost","Waste Value","Notes"]},
+ sop:{sheet:"SOP Library",key:"SOP Name",title:"SOP",help:"Add a clear instruction staff can quickly find.",fields:["Category","SOP Name","Steps / Instructions","Frequency","Owner","Reference Link"]}
+};
+let db={},page="home",activeForm=null,editRecord=null;
+const demo={
+ Dashboard:{headers:["Metric","Value","Meaning"],rows:[["Forecast Revenue ex GST","₹0","Enter expected sales"],["Forecast COGS","₹0","Ingredients + packaging"],["Forecast Gross Profit","₹0","Revenue minus COGS"],["Ingredients To Buy","14","Update stock and forecast"],["Ingredient Master Completion","0%","Enter purchase prices"]]},
+ Ingredients:{headers:["Ingredient ID","Ingredient Name","Category","Vendor","Purchase Qty","Purchase Unit","Base Unit","Purchase Price ex GST","GST %","Unit Cost","Current Stock","Minimum Stock","Reorder Level","Lead Time Days","Active"],rows:[["ING-001","Coffee Beans","Coffee","",5,"kg","g",0,"5%",0,0,1000,1500,7,"Yes"],["ING-002","Milk","Dairy","",1,"L","ml",0,"5%",0,0,3000,5000,2,"Yes"]]},
+ Packaging:{headers:["Packaging ID","Packaging Name","Type","Purchase Qty","Purchase Price ex GST","Unit Cost","Current Stock","Reorder Level","Active"],rows:[["PKG-001","Regular Hot Cup","Cup",100,0,0,0,50,"Yes"]]},
+ Recipes:{headers:["Recipe ID","Recipe Name","Category","Size","Yield Qty","Yield Unit","Prep Time Min","Active"],rows:[["REC-001","Espresso","Coffee","Single",30,"ml",3,"Yes"],["REC-005","Latte","Coffee","Regular",120,"ml",5,"Yes"]]},
+ "Recipe Ingredients":{headers:["Recipe ID","Component Type","Component ID","Component Name","Quantity","Unit","Unit Cost","Cost Contribution","Notes"],rows:[["REC-001","Ingredient","ING-001","Coffee Beans",20,"g",0,0,""],["REC-005","Ingredient","ING-001","Coffee Beans",20,"g",0,0,""],["REC-005","Ingredient","ING-002","Milk",90,"ml",0,0,""]]},
+ Menu:{headers:["Menu ID","Menu Item","Recipe ID","Packaging Profile","Selling Price ex GST","GST","Customer Price","Recipe Cost","Packaging Cost","Total Cost","Food Cost %","Gross Profit","Target Margin %","Suggested Price ex GST"],rows:[["MENU-001","Espresso - Single","REC-001","",0,0,0,0,0,0,"0%",0,"70%",0],["MENU-005","Latte - Regular","REC-005","",0,0,0,0,0,0,"0%",0,"70%",0]]},
+ "Sales Forecast":{headers:["Menu ID","Menu Item","Forecast Units","Selling Price ex GST","Recipe Cost","Packaging Cost","Revenue ex GST","COGS","Gross Profit"],rows:[["MENU-001","Espresso - Single",0,0,0,0,0,0,0]]},
+ "Purchase Planner":{headers:["Ingredient ID","Ingredient Name","Unit","Current Stock","Reorder Level","Direct Forecast Usage","Safety Stock","Required Qty","Suggested Purchase Qty","Status"],rows:[["ING-001","Coffee Beans","g",0,1500,0,0,1500,1500,"BUY"]]},
+ "Production Log":{headers:["Date","Batch ID","Batch Name","Planned Qty","Actual Qty","Unit","Cost","Notes"],rows:[]},"Waste Log":{headers:["Date","Item Type","Item ID","Item Name","Quantity","Unit","Reason","Unit Cost","Waste Value","Notes"],rows:[]},
+ "SOP Library":{headers:["Category","SOP Name","Steps / Instructions","Frequency","Owner","Reference Link"],rows:[["Opening","Opening Checklist","Add approved opening checklist","Daily","Store Manager",""]]}
+};
+function boot(){
+ nav.innerHTML='<small>Workspace</small>'+pages.map(p=>`<button class="nav" onclick="go('${p[0]}')"><span class="icon">${p[1]}</span>${p[2]}</button>`).join("");
+ if(window.google?.script?.run)google.script.run.withSuccessHandler(x=>{db=x;sync.textContent="Google Sheet connected";go("home")}).withFailureHandler(e=>fallback(e.message)).getAppData();else fallback("Preview mode: deploy with Google Apps Script to save changes.");
+}
+function fallback(msg){db=demo;sync.textContent="Preview mode";notice.textContent=msg;notice.classList.remove("hidden");go("home")}
+function go(id){if(id==="dailyProduction"){openForm("production");return}if(id==="dailyWaste"){openForm("waste");return}page=id;const p=pages.find(x=>x[0]===id);pageTitle.textContent=p[2];pageSub.textContent=p[3];[...nav.querySelectorAll(".nav")].forEach((b,i)=>b.classList.toggle("active",pages[i][0]===id));pageAction.innerHTML="";render()}
+const rows=n=>db[n]?.rows||[], headers=n=>db[n]?.headers||[], idx=(n,h)=>headers(n).indexOf(h), val=(n,r,h)=>r[idx(n,h)]??"";
+function render(){({home:home,costs:costs,menu:menu,forecast:forecast,buy:buy,recipes:recipes,daily:daily,sops:sops}[page])()}
+function home(){
+ const m=rows("Dashboard");content.innerHTML=`<div class="grid">${m.slice(0,4).map(x=>metric(x[0],x[1],x[2])).join("")}</div><div class="section"><div class="section-head"><h2>What would you like to do?</h2></div><div class="tasks">
+ ${task("₹","Enter ingredient prices","Set what you pay for beans, milk and other supplies.","costs")}${task("↗","Plan expected sales","Enter a forecast to calculate revenue and stock needs.","forecast")}${task("✓","See what to buy","Get a purchase list from your stock and forecast.","buy")}${task("☕","Check menu margins","See cost, GST, selling price and profit per drink.","menu")}${task("▤","Scale a recipe","Calculate ingredients needed for any number of cups.","recipes")}${task("+","Record today’s activity","Log production batches or waste.","daily")}</div></div>`
+}
+function metric(a,b,c){return`<div class="card metric"><label>${a}</label><strong>${b||0}</strong><small>${c||""}</small></div>`}
+function task(i,t,d,to){return`<button class="task" onclick="go('${to}')"><span class="big">${i}</span><b>${t}</b><span>${d}</span></button>`}
+function costs(){
+ pageAction.innerHTML=`<button class="primary" onclick="openForm('ingredient')">+ Add ingredient</button>`;
+ content.innerHTML=`<div class="two"><div><div class="section-head"><h2>Ingredients</h2><button class="small" onclick="openForm('ingredient')">Add</button></div><div class="list">${rows("Ingredients").map(r=>costRow("Ingredients",r,"Ingredient Name","Purchase Price ex GST","Unit Cost","Current Stock","ingredient")).join("")}</div></div><div><div class="section-head"><h2>Packaging</h2><button class="small" onclick="openForm('packaging')">Add</button></div><div class="list">${rows("Packaging").map(r=>costRow("Packaging",r,"Packaging Name","Purchase Price ex GST","Unit Cost","Current Stock","packaging")).join("")}</div></div></div>`
+}
+function costRow(s,r,name,price,unit,stock,form){return`<div class="row"><div><b>${val(s,r,name)}</b><small>${val(s,r,"Category")||val(s,r,"Type")||""}</small></div><div class="value"><label>Pack price</label><span class="money">₹${val(s,r,price)||0}</span></div><div class="value"><label>Unit cost</label><span>₹${val(s,r,unit)||0}</span></div><div class="value optional"><label>In stock</label><span>${val(s,r,stock)||0}</span></div><button class="small" onclick='openForm("${form}",${JSON.stringify(r)})'>Edit</button></div>`}
+function menu(){
+ content.innerHTML=`<div class="section-head"><h2>Drink profitability</h2><div class="filter"><input placeholder="Search drinks…" oninput="filterCards(this.value,'menuList')"></div></div><div id="menuList" class="list">${rows("Menu").map(r=>`<div class="row searchable"><div><b>${val("Menu",r,"Menu Item")}</b><small>${val("Menu",r,"Recipe ID")}</small></div><div class="value"><label>Customer pays</label><span class="money">₹${val("Menu",r,"Customer Price")||0}</span></div><div class="value"><label>Total cost</label><span>₹${val("Menu",r,"Total Cost")||0}</span></div><div class="value"><label>Gross profit</label><span>₹${val("Menu",r,"Gross Profit")||0}</span></div><span class="tag">${val("Menu",r,"Food Cost %")||"0%" } food cost</span></div>`).join("")}</div>`
+}
+function forecast(){
+ pageAction.innerHTML=`<button class="primary" onclick="saveForecast()">Save forecast</button>`;
+ content.innerHTML=`<div class="notice">Enter the number of each drink you expect to sell. The purchase plan and profit forecast update automatically.</div><div class="list">${rows("Sales Forecast").map((r,i)=>`<div class="row forecast-row"><div><b>${val("Sales Forecast",r,"Menu Item")}</b><small>${val("Sales Forecast",r,"Menu ID")}</small></div><input type="number" min="0" value="${val("Sales Forecast",r,"Forecast Units")||0}" data-forecast="${i}"><div class="value"><label>Forecast revenue</label><span>₹${val("Sales Forecast",r,"Revenue ex GST")||0}</span></div><div class="value"><label>Gross profit</label><span>₹${val("Sales Forecast",r,"Gross Profit")||0}</span></div></div>`).join("")}</div>`
+}
+function saveForecast(){const items=[...document.querySelectorAll("[data-forecast]")];if(!window.google?.script?.run){notice.textContent="Forecast saved in preview only.";notice.classList.remove("hidden");return}items.forEach(el=>{const r=rows("Sales Forecast")[+el.dataset.forecast],rec={};headers("Sales Forecast").forEach((h,i)=>rec[h]=r[i]);rec["Forecast Units"]=el.value;google.script.run.saveRecord("Sales Forecast",rec,"Menu ID")});sync.textContent="Forecast saved";setTimeout(()=>location.reload(),800)}
+function buy(){
+ const list=rows("Purchase Planner").filter(r=>Number(val("Purchase Planner",r,"Suggested Purchase Qty"))>0);
+ content.innerHTML=`<div class="grid">${metric("Items to buy",list.length,"Based on forecast and reorder levels")}${metric("Planning mode","Forecast","No POS deduction")}</div><div class="section"><div class="section-head"><h2>Recommended purchase list</h2></div><div class="list">${list.map(r=>`<div class="row"><div><b>${val("Purchase Planner",r,"Ingredient Name")}</b><small>Current: ${val("Purchase Planner",r,"Current Stock")} ${val("Purchase Planner",r,"Unit")}</small></div><div class="value"><label>Forecast usage</label><span>${val("Purchase Planner",r,"Direct Forecast Usage")} ${val("Purchase Planner",r,"Unit")}</span></div><div class="value"><label>Required</label><span>${val("Purchase Planner",r,"Required Qty")} ${val("Purchase Planner",r,"Unit")}</span></div><div class="value"><label>Buy</label><b>${val("Purchase Planner",r,"Suggested Purchase Qty")} ${val("Purchase Planner",r,"Unit")}</b></div><span class="tag buy">BUY</span></div>`).join("")||'<div class="empty">Nothing to buy based on the current plan.</div>'}</div></div>`
+}
+function recipes(){
+ content.innerHTML=`<div class="section-head"><h2>Live recipe book</h2><div class="filter"><input placeholder="Search recipes…" oninput="filterCards(this.value,'recipeList')"><select id="servings" onchange="renderRecipes()"><option value="1">1 serving</option><option value="5">5 servings</option><option value="10">10 servings</option><option value="25">25 servings</option><option value="50">50 servings</option></select></div></div><div id="recipeList"></div>`;renderRecipes()
+}
+function renderRecipes(){const n=Number(document.getElementById("servings")?.value||1);document.getElementById("recipeList").className="recipe-grid";document.getElementById("recipeList").innerHTML=rows("Recipes").map(r=>{const id=val("Recipes",r,"Recipe ID"),ins=rows("Recipe Ingredients").filter(x=>val("Recipe Ingredients",x,"Recipe ID")===id);return`<div class="recipe searchable"><span class="cat">${val("Recipes",r,"Category")}</span><h3>${val("Recipes",r,"Recipe Name")}</h3><div class="meta"><span class="tag">${val("Recipes",r,"Size")}</span><span class="tag">${n} serving${n>1?"s":""}</span><span class="tag">${val("Recipes",r,"Prep Time Min")} min</span></div><div class="ingredients">${ins.map(x=>`<div>${val("Recipe Ingredients",x,"Component Name")} <b>${Number(val("Recipe Ingredients",x,"Quantity")||0)*n} ${val("Recipe Ingredients",x,"Unit")}</b></div>`).join("")||"Add ingredients in the backend sheet."}</div></div>`}).join("")}
+function daily(){
+ pageAction.innerHTML=`<button class="primary" onclick="openForm('production')">+ Record production</button>`;
+ content.innerHTML=`<div class="tasks">${task("+","Record production","Log a concentrate or prep batch.","dailyProduction")}${task("−","Record waste","Log spills, expiry, remakes or training waste.","dailyWaste")}</div><div class="two section"><div><div class="section-head"><h2>Recent production</h2></div>${simpleLog("Production Log")}</div><div><div class="section-head"><h2>Recent waste</h2></div>${simpleLog("Waste Log")}</div></div>`;
+}
+function dailyProduction(){openForm("production")}function dailyWaste(){openForm("waste")}
+function simpleLog(n){return`<div class="list">${rows(n).slice(-8).reverse().map(r=>`<div class="card"><b>${r[2]||r[3]||"Entry"}</b><br><small>${r[0]||""} · ${r[4]||r[3]||""} ${r[5]||""}</small></div>`).join("")||'<div class="empty">No entries yet.</div>'}</div>`}
+function sops(){
+ pageAction.innerHTML=`<button class="primary" onclick="openForm('sop')">+ Add SOP</button>`;content.innerHTML=`<div class="filter"><input placeholder="Search instructions…" oninput="filterCards(this.value,'sopList')"></div><div class="section recipe-grid" id="sopList">${rows("SOP Library").map(r=>`<div class="recipe searchable"><span class="cat">${val("SOP Library",r,"Category")}</span><h3>${val("SOP Library",r,"SOP Name")}</h3><p>${val("SOP Library",r,"Steps / Instructions")}</p><div class="meta"><span class="tag">${val("SOP Library",r,"Frequency")}</span><span class="tag">${val("SOP Library",r,"Owner")}</span></div></div>`).join("")}</div>`
+}
+function filterCards(q,id){q=q.toLowerCase();document.querySelectorAll(`#${id} .searchable`).forEach(x=>x.classList.toggle("hidden",!x.textContent.toLowerCase().includes(q)))}
+function openForm(type,row=null){activeForm=forms[type];editRecord=row;modalTitle.textContent=(row?"Edit ":"Add ")+activeForm.title;modalHelp.textContent=activeForm.help;fields.innerHTML=activeForm.fields.map(h=>{const i=idx(activeForm.sheet,h),v=row&&i>=0?row[i]:"";return`<div class="field"><label>${h}</label>${h.includes("Notes")||h.includes("Instructions")?`<textarea name="${h}">${v}</textarea>`:`<input name="${h}" value="${v}" ${h==="Date"?'type="date"':""} ${h===activeForm.key?"required":""}>`}</div>`}).join("");modal.showModal()}
+function submitForm(e){e.preventDefault();const rec=Object.fromEntries(new FormData(e.target).entries());if(!window.google?.script?.run){modal.close();notice.textContent="Saved in preview only. Deploy the app for live Google Sheet updates.";notice.classList.remove("hidden");return}const ok=()=>{modal.close();sync.textContent="Saved";setTimeout(()=>location.reload(),500)},bad=x=>alert(x.message);activeForm.log?google.script.run.withSuccessHandler(ok).withFailureHandler(bad).appendLog(activeForm.sheet,rec):google.script.run.withSuccessHandler(ok).withFailureHandler(bad).saveRecord(activeForm.sheet,rec,activeForm.key)}
+boot();
+</script>
+</body>
+</html>
