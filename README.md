@@ -17,4 +17,5 @@ Firebase project: `farm-to-cups-operations`
 - The ingredient master follows the uploaded schema exactly: ID, category, name, brand, vendor, delivery days, supply unit, base size/unit, base price, and MOQ.
 - Dense pages use focused tabs so sales forecasts, purchase plans, ingredients, and packaging are not displayed simultaneously.
 - Recipe Book includes expandable detailed preparation instructions for every drink, editable by head office.
+- Final recipes from `Final Recipies.pdf` are displayed as color-coded printable cards with ingredients, yields, and full methods.
 - Area-manager access is intentionally deferred.
