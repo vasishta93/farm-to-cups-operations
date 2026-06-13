@@ -4,6 +4,8 @@ This package contains the task-focused Inaivu operations and planning dashboard 
 
 The current interface is the admin panel. It exposes only forecasting and admin-managed master data: stores, menu items, ingredients and packaging, recipes, and batch preparations.
 
+The cost engine automatically matches the menu to final recipes and recalculates ingredient COGS, batch costs, container costs, total cost, 5% GST MRP, margins, and forecast values whenever source data changes.
+
 Firebase project: `farm-to-cups-operations`
 
 ## Operations model
