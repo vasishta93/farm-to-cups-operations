@@ -8,6 +8,8 @@ The cost engine automatically matches the menu to final recipes and recalculates
 
 Recipes and batches include a dedicated ingredient-composition editor with dropdown selection, independent quantity and unit controls, removal, and automatic downstream cost recalculation.
 
+Creating a new recipe is a guided two-step workflow: save the recipe details, then immediately add its ingredients and quantities in the composition editor.
+
 Firebase project: `farm-to-cups-operations`
 
 ## Operations model
