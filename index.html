@@ -4,6 +4,9 @@
   <base target="_top">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="seed-data.js"></script>
   <style>
     :root{--forest:#173b2b;--green:#2e7152;--mint:#eaf3ed;--cream:#f7f5ef;--white:#fff;--ink:#17251e;--muted:#66776e;--line:#dce5df;--orange:#c66d32;--red:#b5453c}
     *{box-sizing:border-box}body{margin:0;font:14px Arial,sans-serif;background:var(--cream);color:var(--ink)}
@@ -24,7 +27,7 @@
 </head>
 <body>
 <div class="app">
-  <header class="top"><div class="brand">Farm to Cups</div><span class="mode">Planning workspace</span><span class="status" id="sync">Connecting to Google Sheet…</span></header>
+  <header class="top"><div class="brand">Farm to Cups</div><span class="mode">Planning workspace</span><span class="status" id="sync">Connecting to Firebase…</span></header>
   <div class="shell">
     <aside class="side" id="nav"></aside>
     <main><div id="notice" class="notice hidden"></div><div class="heading"><div><h1 id="pageTitle"></h1><p id="pageSub"></p></div><div id="pageAction"></div></div><div id="content"></div></main>
@@ -50,6 +53,7 @@ const forms={
  sop:{sheet:"SOP Library",key:"SOP Name",title:"SOP",help:"Add a clear instruction staff can quickly find.",fields:["Category","SOP Name","Steps / Instructions","Frequency","Owner","Reference Link"]}
 };
 let db={},page="home",activeForm=null,editRecord=null;
+const firebaseConfig={apiKey:"AIzaSyDKEGnTjRVEnHLQZPYnNjmPasi43p9wkvU",authDomain:"farm-to-cups-operations.firebaseapp.com",databaseURL:"https://farm-to-cups-operations-default-rtdb.firebaseio.com",projectId:"farm-to-cups-operations",storageBucket:"farm-to-cups-operations.firebasestorage.app",messagingSenderId:"344413399566",appId:"1:344413399566:web:8c08316950bbd27796aa5f"};
 const demo={
  Dashboard:{headers:["Metric","Value","Meaning"],rows:[["Forecast Revenue ex GST","₹0","Enter expected sales"],["Forecast COGS","₹0","Ingredients + packaging"],["Forecast Gross Profit","₹0","Revenue minus COGS"],["Ingredients To Buy","14","Update stock and forecast"],["Ingredient Master Completion","0%","Enter purchase prices"]]},
  Ingredients:{headers:["Ingredient ID","Ingredient Name","Category","Vendor","Purchase Qty","Purchase Unit","Base Unit","Purchase Price ex GST","GST %","Unit Cost","Current Stock","Minimum Stock","Reorder Level","Lead Time Days","Active"],rows:[["ING-001","Coffee Beans","Coffee","",5,"kg","g",0,"5%",0,0,1000,1500,7,"Yes"],["ING-002","Milk","Dairy","",1,"L","ml",0,"5%",0,0,3000,5000,2,"Yes"]]},
@@ -62,9 +66,9 @@ const demo={
  "Production Log":{headers:["Date","Batch ID","Batch Name","Planned Qty","Actual Qty","Unit","Cost","Notes"],rows:[]},"Waste Log":{headers:["Date","Item Type","Item ID","Item Name","Quantity","Unit","Reason","Unit Cost","Waste Value","Notes"],rows:[]},
  "SOP Library":{headers:["Category","SOP Name","Steps / Instructions","Frequency","Owner","Reference Link"],rows:[["Opening","Opening Checklist","Add approved opening checklist","Daily","Store Manager",""]]}
 };
-function boot(){
+async function boot(){
  nav.innerHTML='<small>Workspace</small>'+pages.map(p=>`<button class="nav" onclick="go('${p[0]}')"><span class="icon">${p[1]}</span>${p[2]}</button>`).join("");
- if(window.google?.script?.run)google.script.run.withSuccessHandler(x=>{db=x;sync.textContent="Google Sheet connected";go("home")}).withFailureHandler(e=>fallback(e.message)).getAppData();else fallback("Preview mode: deploy with Google Apps Script to save changes.");
+ try{firebase.initializeApp(firebaseConfig);const snap=await firebase.database().ref("appData").once("value");db=snap.val()||window.FARM_TO_CUPS_SEED||demo;if(!snap.exists())await firebase.database().ref("appData").set(db);sync.textContent="Firebase connected";go("home")}catch(e){db=window.FARM_TO_CUPS_SEED||demo;sync.textContent="Firebase setup pending";notice.textContent="Firebase project is connected, but database creation permission is still pending. Showing the complete local dataset.";notice.classList.remove("hidden");go("home")}
 }
 function fallback(msg){db=demo;sync.textContent="Preview mode";notice.textContent=msg;notice.classList.remove("hidden");go("home")}
 function go(id){if(id==="dailyProduction"){openForm("production");return}if(id==="dailyWaste"){openForm("waste");return}page=id;const p=pages.find(x=>x[0]===id);pageTitle.textContent=p[2];pageSub.textContent=p[3];[...nav.querySelectorAll(".nav")].forEach((b,i)=>b.classList.toggle("active",pages[i][0]===id));pageAction.innerHTML="";render()}
@@ -88,7 +92,7 @@ function forecast(){
  pageAction.innerHTML=`<button class="primary" onclick="saveForecast()">Save forecast</button>`;
  content.innerHTML=`<div class="notice">Enter the number of each drink you expect to sell. The purchase plan and profit forecast update automatically.</div><div class="list">${rows("Sales Forecast").map((r,i)=>`<div class="row forecast-row"><div><b>${val("Sales Forecast",r,"Menu Item")}</b><small>${val("Sales Forecast",r,"Menu ID")}</small></div><input type="number" min="0" value="${val("Sales Forecast",r,"Forecast Units")||0}" data-forecast="${i}"><div class="value"><label>Forecast revenue</label><span>₹${val("Sales Forecast",r,"Revenue ex GST")||0}</span></div><div class="value"><label>Gross profit</label><span>₹${val("Sales Forecast",r,"Gross Profit")||0}</span></div></div>`).join("")}</div>`
 }
-function saveForecast(){const items=[...document.querySelectorAll("[data-forecast]")];if(!window.google?.script?.run){notice.textContent="Forecast saved in preview only.";notice.classList.remove("hidden");return}items.forEach(el=>{const r=rows("Sales Forecast")[+el.dataset.forecast],rec={};headers("Sales Forecast").forEach((h,i)=>rec[h]=r[i]);rec["Forecast Units"]=el.value;google.script.run.saveRecord("Sales Forecast",rec,"Menu ID")});sync.textContent="Forecast saved";setTimeout(()=>location.reload(),800)}
+async function saveForecast(){const items=[...document.querySelectorAll("[data-forecast]")];items.forEach(el=>db["Sales Forecast"].rows[+el.dataset.forecast][idx("Sales Forecast","Forecast Units")]=Number(el.value||0));await persist();sync.textContent="Forecast saved";render()}
 function buy(){
  const list=rows("Purchase Planner").filter(r=>Number(val("Purchase Planner",r,"Suggested Purchase Qty"))>0);
  content.innerHTML=`<div class="grid">${metric("Items to buy",list.length,"Based on forecast and reorder levels")}${metric("Planning mode","Forecast","No POS deduction")}</div><div class="section"><div class="section-head"><h2>Recommended purchase list</h2></div><div class="list">${list.map(r=>`<div class="row"><div><b>${val("Purchase Planner",r,"Ingredient Name")}</b><small>Current: ${val("Purchase Planner",r,"Current Stock")} ${val("Purchase Planner",r,"Unit")}</small></div><div class="value"><label>Forecast usage</label><span>${val("Purchase Planner",r,"Direct Forecast Usage")} ${val("Purchase Planner",r,"Unit")}</span></div><div class="value"><label>Required</label><span>${val("Purchase Planner",r,"Required Qty")} ${val("Purchase Planner",r,"Unit")}</span></div><div class="value"><label>Buy</label><b>${val("Purchase Planner",r,"Suggested Purchase Qty")} ${val("Purchase Planner",r,"Unit")}</b></div><span class="tag buy">BUY</span></div>`).join("")||'<div class="empty">Nothing to buy based on the current plan.</div>'}</div></div>`
@@ -108,7 +112,8 @@ function sops(){
 }
 function filterCards(q,id){q=q.toLowerCase();document.querySelectorAll(`#${id} .searchable`).forEach(x=>x.classList.toggle("hidden",!x.textContent.toLowerCase().includes(q)))}
 function openForm(type,row=null){activeForm=forms[type];editRecord=row;modalTitle.textContent=(row?"Edit ":"Add ")+activeForm.title;modalHelp.textContent=activeForm.help;fields.innerHTML=activeForm.fields.map(h=>{const i=idx(activeForm.sheet,h),v=row&&i>=0?row[i]:"";return`<div class="field"><label>${h}</label>${h.includes("Notes")||h.includes("Instructions")?`<textarea name="${h}">${v}</textarea>`:`<input name="${h}" value="${v}" ${h==="Date"?'type="date"':""} ${h===activeForm.key?"required":""}>`}</div>`}).join("");modal.showModal()}
-function submitForm(e){e.preventDefault();const rec=Object.fromEntries(new FormData(e.target).entries());if(!window.google?.script?.run){modal.close();notice.textContent="Saved in preview only. Deploy the app for live Google Sheet updates.";notice.classList.remove("hidden");return}const ok=()=>{modal.close();sync.textContent="Saved";setTimeout(()=>location.reload(),500)},bad=x=>alert(x.message);activeForm.log?google.script.run.withSuccessHandler(ok).withFailureHandler(bad).appendLog(activeForm.sheet,rec):google.script.run.withSuccessHandler(ok).withFailureHandler(bad).saveRecord(activeForm.sheet,rec,activeForm.key)}
+async function persist(){await firebase.database().ref("appData").set(db)}
+async function submitForm(e){e.preventDefault();const rec=Object.fromEntries(new FormData(e.target).entries()),sheet=db[activeForm.sheet],row=sheet.headers.map(h=>rec[h]??"");if(activeForm.log)sheet.rows.push(row);else{const ki=sheet.headers.indexOf(activeForm.key),found=sheet.rows.findIndex(r=>String(r[ki])===String(rec[activeForm.key]));if(found>=0)sheet.rows[found]=sheet.headers.map((h,i)=>Object.prototype.hasOwnProperty.call(rec,h)?rec[h]:sheet.rows[found][i]);else sheet.rows.push(row)}try{await persist();sync.textContent="Saved to Firebase"}catch(err){sync.textContent="Saved locally; Firebase pending";notice.textContent="Firebase database permission is pending, so this change is only available in this browser session.";notice.classList.remove("hidden")}modal.close();render()}
 boot();
 </script>
 </body>

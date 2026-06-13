@@ -1,5 +1,5 @@
 # Farm to Cups Vercel Interface
 
-This package contains the task-focused Farm to Cups web interface prepared for Vercel.
+This package contains the task-focused Farm to Cups web interface hosted on Vercel and prepared for Firebase Realtime Database.
 
-The deployed static interface operates in preview mode until a secure Google Sheets API endpoint is configured. Do not make the Google Sheet public merely to connect it.
+Firebase project: `farm-to-cups-operations`
