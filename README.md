@@ -11,4 +11,5 @@ Firebase project: `farm-to-cups-operations`
 - Products can have daily or weekly warehouse request rules.
 - Stores have one shared workspace and can request supplies only from the central warehouse.
 - Warehouse managers approve or reject requests before dispatch.
+- Forecasting is a separate planning zone and does not represent actual sales or change store inventory.
 - Area-manager access is intentionally deferred.

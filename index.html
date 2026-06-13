@@ -37,17 +37,17 @@
 <dialog id="modal"><form method="dialog" class="modal" onsubmit="submitForm(event)"><h2 id="modalTitle"></h2><p id="modalHelp"></p><div class="form" id="fields"></div><div class="actions"><button class="secondary" value="cancel">Cancel</button><button class="primary" value="default">Save</button></div></form></dialog>
 <script>
 const pages=[
- ["home","⌂","Home","Today’s priorities and shortcuts"],
- ["admin","A","Admin setup","Create stores and define ordering schedules"],
- ["warehouse","W","Warehouse","Review, approve and dispatch store requests"],
- ["store","S","Store workspace","Forecast, inventory and warehouse requests"],
- ["costs","₹","Costs","Ingredients and packaging"],
- ["menu","☕","Menu & margins","Prices, costs and profit"],
- ["forecast","↗","Sales forecast","Plan expected sales"],
- ["buy","✓","What to buy","Purchase recommendations"],
- ["recipes","▤","Recipe book","Recipes and scaling"],
- ["daily","+","Daily logs","Production and waste"],
- ["sops","?","SOPs","Operating procedures"]
+ ["home","⌂","Home","Today’s priorities and shortcuts","Operations"],
+ ["admin","A","Admin setup","Create stores and define ordering schedules","Operations"],
+ ["warehouse","W","Warehouse","Review, approve and dispatch store requests","Operations"],
+ ["store","S","Store workspace","Inventory and warehouse requests","Operations"],
+ ["forecast","↗","Forecast center","Speculation and demand planning","Forecast zone"],
+ ["costs","₹","Costs","Ingredients and packaging","Head office"],
+ ["menu","☕","Menu & margins","Prices, costs and profit","Head office"],
+ ["recipes","▤","Recipe book","Recipes and scaling","Head office"],
+ ["buy","✓","What to buy","Purchase recommendations","Records"],
+ ["daily","+","Daily logs","Production and waste","Records"],
+ ["sops","?","SOPs","Operating procedures","Records"]
 ];
 const forms={
  store:{sheet:"Stores",key:"Store ID",title:"Store",help:"Create one shared workspace for a store and choose its default ordering timings.",fields:["Store ID","Store Name","Location","Default Request Frequency","Request Cutoff","Preferred Dispatch Time","Active"]},
@@ -74,7 +74,7 @@ const demo={
  "SOP Library":{headers:["Category","SOP Name","Steps / Instructions","Frequency","Owner","Reference Link"],rows:[["Opening","Opening Checklist","Add approved opening checklist","Daily","Store Manager",""]]}
 };
 async function boot(){
- nav.innerHTML='<small>Workspace</small>'+pages.map(p=>`<button class="nav" onclick="go('${p[0]}')"><span class="icon">${p[1]}</span>${p[2]}</button>`).join("");
+ nav.innerHTML=[...new Set(pages.map(p=>p[4]))].map(zone=>`<small>${zone}</small>${pages.filter(p=>p[4]===zone).map(p=>`<button class="nav" data-page="${p[0]}" onclick="go('${p[0]}')"><span class="icon">${p[1]}</span>${p[2]}</button>`).join("")}`).join("");
  try{firebase.initializeApp(firebaseConfig);const snap=await firebase.database().ref("appData").once("value");db=snap.val()||window.FARM_TO_CUPS_SEED||demo;ensureOperations();if(!snap.exists())await firebase.database().ref("appData").set(db);sync.textContent="Firebase connected";go("home")}catch(e){db=window.FARM_TO_CUPS_SEED||demo;ensureOperations();sync.textContent="Firebase setup pending";notice.textContent="Firebase is connected in secure read-only mode. Changes remain in this browser until staff authentication is enabled.";notice.classList.remove("hidden");go("home")}
 }
 function ensureOperations(){
@@ -83,7 +83,7 @@ function ensureOperations(){
  if(!db["Store Requests"])db["Store Requests"]={headers:["Request ID","Store ID","Request Date","Frequency","Product ID","Product Name","Requested Qty","Approved Qty","Unit","Needed By","Status","Approved By","Approved At","Dispatched At","Received At","Notes"],rows:[]};
 }
 function fallback(msg){db=demo;sync.textContent="Preview mode";notice.textContent=msg;notice.classList.remove("hidden");go("home")}
-function go(id){if(id==="dailyProduction"){openForm("production");return}if(id==="dailyWaste"){openForm("waste");return}if(id==="storeRequest"){openForm("request");return}page=id;const p=pages.find(x=>x[0]===id);pageTitle.textContent=p[2];pageSub.textContent=p[3];[...nav.querySelectorAll(".nav")].forEach((b,i)=>b.classList.toggle("active",pages[i][0]===id));pageAction.innerHTML="";render()}
+function go(id){if(id==="dailyProduction"){openForm("production");return}if(id==="dailyWaste"){openForm("waste");return}if(id==="storeRequest"){openForm("request");return}page=id;const p=pages.find(x=>x[0]===id);pageTitle.textContent=p[2];pageSub.textContent=p[3];[...nav.querySelectorAll(".nav")].forEach(b=>b.classList.toggle("active",b.dataset.page===id));pageAction.innerHTML="";render()}
 const rows=n=>db[n]?.rows||[], headers=n=>db[n]?.headers||[], idx=(n,h)=>headers(n).indexOf(h), val=(n,r,h)=>r[idx(n,h)]??"";
 function render(){({home:home,admin:admin,warehouse:warehouse,store:store,costs:costs,menu:menu,forecast:forecast,buy:buy,recipes:recipes,daily:daily,sops:sops}[page])()}
 function home(){
@@ -105,7 +105,7 @@ function warehouse(){
 }
 function store(){
  pageAction.innerHTML=`<button class="primary" onclick="openForm('request')">+ Request from warehouse</button>`;
- content.innerHTML=`<div class="notice">Stores can request stock only from the central warehouse. Requests may be daily or weekly depending on the product, and require warehouse approval before dispatch.</div><div class="tasks">${task("↗","Forecast mode","Plan expected sales and calculate stock needs.","forecast")}${task("+","Request stock","Create a daily or weekly warehouse request.","storeRequest")}${task("✓","Store inventory","Review current store stock and reorder needs.","buy")}</div><div class="section"><div class="section-head"><h2>Recent requests</h2></div><div class="list">${rows("Store Requests").slice().reverse().map((r,i)=>requestRow(r,rows("Store Requests").length-1-i,false)).join("")||'<div class="empty">No store requests yet.</div>'}</div></div>`;
+ content.innerHTML=`<div class="notice">Stores can request stock only from the central warehouse. Requests may be daily or weekly depending on the product, and require warehouse approval before dispatch.</div><div class="tasks">${task("+","Request stock","Create a daily or weekly warehouse request.","storeRequest")}${task("✓","Store inventory","Review current store stock and reorder needs.","buy")}${task("+","Record store activity","Log production or waste separately from forecasting.","daily")}</div><div class="section"><div class="section-head"><h2>Recent requests</h2></div><div class="list">${rows("Store Requests").slice().reverse().map((r,i)=>requestRow(r,rows("Store Requests").length-1-i,false)).join("")||'<div class="empty">No store requests yet.</div>'}</div></div>`;
 }
 function requestRow(r,i,actions){const status=val("Store Requests",r,"Status")||"Pending";return`<div class="row"><div><b>${val("Store Requests",r,"Product Name")}</b><small>${val("Store Requests",r,"Store ID")} · Needed ${val("Store Requests",r,"Needed By")||"flexibly"}</small></div><div class="value"><label>Frequency</label><span>${val("Store Requests",r,"Frequency")}</span></div><div class="value"><label>Requested</label><span>${val("Store Requests",r,"Requested Qty")} ${val("Store Requests",r,"Unit")}</span></div><div class="status-line"><span class="tag ${status.toLowerCase()}">${status}</span></div>${actions&&status==="Pending"?`<span class="status-line"><button class="small" onclick="setRequestStatus(${i},'Approved')">Approve</button><button class="small" onclick="setRequestStatus(${i},'Rejected')">Reject</button></span>`:""}</div>`}
 async function setRequestStatus(i,status){const r=db["Store Requests"].rows[i];r[idx("Store Requests","Status")]=status;r[idx("Store Requests","Approved By")]="Warehouse Manager";r[idx("Store Requests","Approved At")]=new Date().toISOString();try{await persist();sync.textContent="Request "+status.toLowerCase()}catch(e){showReadOnly()}render()}
@@ -119,7 +119,8 @@ function menu(){
 }
 function forecast(){
  pageAction.innerHTML=`<button class="primary" onclick="saveForecast()">Save forecast</button>`;
- content.innerHTML=`<div class="notice">Enter the number of each drink you expect to sell. The purchase plan and profit forecast update automatically.</div><div class="list">${rows("Sales Forecast").map((r,i)=>`<div class="row forecast-row"><div><b>${val("Sales Forecast",r,"Menu Item")}</b><small>${val("Sales Forecast",r,"Menu ID")}</small></div><input type="number" min="0" value="${val("Sales Forecast",r,"Forecast Units")||0}" data-forecast="${i}"><div class="value"><label>Forecast revenue</label><span>₹${val("Sales Forecast",r,"Revenue ex GST")||0}</span></div><div class="value"><label>Gross profit</label><span>₹${val("Sales Forecast",r,"Gross Profit")||0}</span></div></div>`).join("")}</div>`
+ const total=rows("Sales Forecast").reduce((n,r)=>n+Number(val("Sales Forecast",r,"Forecast Units")||0),0);
+ content.innerHTML=`<div class="notice"><b>Forecast zone:</b> This area is only for prediction and speculation. Actual sales will remain separate and will connect to the POS later.</div><div class="grid">${metric("Forecast units",total,"Expected drinks, not actual sales")}${metric("Forecast mode","Planning","Does not change store inventory")}${metric("Actual sales","Separate","POS connection comes later")}${metric("Ordering impact","Planning only","Supports warehouse request decisions")}</div><div class="section"><div class="section-head"><h2>Expected sales by product</h2></div><div class="list">${rows("Sales Forecast").map((r,i)=>`<div class="row forecast-row"><div><b>${val("Sales Forecast",r,"Menu Item")}</b><small>${val("Sales Forecast",r,"Menu ID")}</small></div><input type="number" min="0" value="${val("Sales Forecast",r,"Forecast Units")||0}" data-forecast="${i}"><div class="value"><label>Forecast revenue</label><span>₹${val("Sales Forecast",r,"Revenue ex GST")||0}</span></div><div class="value"><label>Gross profit</label><span>₹${val("Sales Forecast",r,"Gross Profit")||0}</span></div></div>`).join("")}</div></div>`
 }
 async function saveForecast(){const items=[...document.querySelectorAll("[data-forecast]")];items.forEach(el=>db["Sales Forecast"].rows[+el.dataset.forecast][idx("Sales Forecast","Forecast Units")]=Number(el.value||0));await persist();sync.textContent="Forecast saved";render()}
 function buy(){
