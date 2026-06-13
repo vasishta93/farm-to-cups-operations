@@ -12,6 +12,7 @@ Firebase project: `farm-to-cups-operations`
 - Stores have one shared workspace and can request supplies only from the central warehouse.
 - Warehouse managers approve or reject requests before dispatch.
 - Forecasting is a separate planning zone and does not represent actual sales or change store inventory.
+- Forecast Center shows what ingredients to purchase and suggested quantities based on forecast usage and reorder levels.
 - Head office can bulk upload ingredient prices, base quantities, units, MOQs, vendors, and GST using the downloadable CSV template.
 - Each ingredient records its supplier source, contact/reference, purchase frequency, order day, delivery day, and lead time.
 - Area-manager access is intentionally deferred.
