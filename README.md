@@ -16,4 +16,5 @@ Firebase project: `farm-to-cups-operations`
 - Head office can bulk upload ingredient prices, base quantities, units, MOQs, vendors, and GST using the downloadable CSV template.
 - Each ingredient records its supplier source, contact/reference, purchase frequency, order day, delivery day, and lead time.
 - Dense pages use focused tabs so sales forecasts, purchase plans, ingredients, and packaging are not displayed simultaneously.
+- Recipe Book includes expandable detailed preparation instructions for every drink, editable by head office.
 - Area-manager access is intentionally deferred.
