@@ -2,6 +2,8 @@
 
 This package contains the task-focused Inaivu operations and planning dashboard hosted on Vercel and prepared for Firebase Realtime Database.
 
+The current interface is the admin panel. It exposes only forecasting and admin-managed master data: stores, menu items, ingredients and packaging, recipes, and batch preparations.
+
 Firebase project: `farm-to-cups-operations`
 
 ## Operations model
