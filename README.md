@@ -1,6 +1,6 @@
-# Farm to Cups Vercel Interface
+# Inaivu Dashboard
 
-This package contains the task-focused Farm to Cups web interface hosted on Vercel and prepared for Firebase Realtime Database.
+This package contains the task-focused Inaivu operations and planning dashboard hosted on Vercel and prepared for Firebase Realtime Database.
 
 Firebase project: `farm-to-cups-operations`
 
