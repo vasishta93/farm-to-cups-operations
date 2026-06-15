@@ -1,16 +1,16 @@
 # Inaivu Dashboard
 
-This package contains the task-focused Inaivu operations and planning dashboard hosted on Vercel and prepared for Firebase Realtime Database.
+This package contains the task-focused Inaivu operations and planning dashboard hosted on Vercel.
 
 The current interface is the admin panel. It exposes only forecasting and admin-managed master data: stores, menu items, ingredients and packaging, recipes, and batch preparations.
 
-The cost engine automatically matches the menu to final recipes and recalculates ingredient COGS, batch costs, container costs, total cost, 5% GST MRP, margins, and forecast values whenever source data changes.
+The cost engine automatically matches the menu to final recipes and recalculates ingredient COGS, batch costs, container costs, total cost, margins, and forecast values whenever source data changes.
 
 Recipes and batches include a dedicated ingredient-composition editor with dropdown selection, independent quantity and unit controls, removal, and automatic downstream cost recalculation.
 
 Creating a new recipe is a guided two-step workflow: save the recipe details, then immediately add its ingredients and quantities in the composition editor.
 
-Firebase project: `farm-to-cups-operations`
+The dashboard is standalone and uses browser-local storage. The bundled `seed-data.js` file provides the initial master data.
 
 ## Operations model
 
