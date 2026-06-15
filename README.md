@@ -10,7 +10,7 @@ Recipes and batches include a dedicated ingredient-composition editor with dropd
 
 Creating a new recipe is a guided two-step workflow: save the recipe details, then immediately add its ingredients and quantities in the composition editor.
 
-The dashboard is standalone and uses browser-local storage. The bundled `seed-data.js` file provides the initial master data.
+The dashboard uses the `inaivu-services` Firebase Realtime Database as its shared backend, with browser-local storage as an offline fallback. The bundled `seed-data.js` file provides recovery data.
 
 ## Operations model
 

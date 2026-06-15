@@ -5,6 +5,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Inaivu Dashboard</title>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="seed-data.js"></script>
   <style>
     :root{--forest:#173b2b;--green:#2e7152;--mint:#eaf3ed;--cream:#f7f5ef;--white:#fff;--ink:#17251e;--muted:#66776e;--line:#dce5df;--orange:#c66d32;--red:#b5453c}
@@ -34,7 +37,7 @@
 </head>
 <body>
 <div class="app">
-  <header class="top"><div><div class="brand">Inaivu Dashboard</div><div class="brand-sub">Admin panel</div></div><div class="top-actions"><select class="quick-nav" id="quickNav" onchange="go(this.value)" aria-label="Go to page"></select><span class="status" id="sync">Loading local data…</span></div></header>
+  <header class="top"><div><div class="brand">Inaivu Dashboard</div><div class="brand-sub">Admin panel</div></div><div class="top-actions"><select class="quick-nav" id="quickNav" onchange="go(this.value)" aria-label="Go to page"></select><span class="status" id="sync">Connecting to Inaivu Firebase…</span></div></header>
   <div class="shell">
     <aside class="side" id="nav"></aside>
     <main><div id="notice" class="notice hidden"></div><div class="heading"><div><h1 id="pageTitle"></h1><p id="pageSub"></p></div><div id="pageAction"></div></div><div id="content"></div></main>
@@ -83,7 +86,7 @@ const demo={
 async function boot(){
  nav.innerHTML=[...new Set(pages.map(p=>p[4]))].map(zone=>`<small>${zone}</small>${pages.filter(p=>p[4]===zone).map(p=>`<button class="nav" data-page="${p[0]}" onclick="go('${p[0]}')"><span class="icon">${p[1]}</span>${p[2]}</button>`).join("")}`).join("");
  quickNav.innerHTML=pages.map(p=>`<option value="${p[0]}">${p[2]}</option>`).join("");
- try{db=JSON.parse(localStorage.getItem(localDataKey))||window.FARM_TO_CUPS_SEED||demo;ensureOperations();sync.textContent="Local browser storage";go("home")}catch(e){db=window.FARM_TO_CUPS_SEED||demo;ensureOperations();sync.textContent="Local preview mode";notice.textContent="Browser storage is unavailable. Changes will remain only until this page is closed.";notice.classList.remove("hidden");go("home")}
+ try{firebase.initializeApp(window.INAIVU_FIREBASE_CONFIG);const snap=await firebase.database().ref("appData").once("value");db=snap.val()||JSON.parse(localStorage.getItem(localDataKey))||window.FARM_TO_CUPS_SEED||demo;ensureOperations();if(!snap.exists())await firebase.database().ref("appData").set(db);localStorage.setItem(localDataKey,JSON.stringify(db));sync.textContent="Inaivu Firebase connected";go("home")}catch(e){db=JSON.parse(localStorage.getItem(localDataKey))||window.FARM_TO_CUPS_SEED||demo;ensureOperations();sync.textContent="Offline browser cache";notice.textContent="Inaivu Firebase is temporarily unavailable. Changes will remain in this browser until the connection returns.";notice.classList.remove("hidden");go("home")}
 }
 function ensureOperations(){
  ensureColumns("Recipes",["Instructions"]);ensureRecipeInstructions();
@@ -252,8 +255,8 @@ function removeComponent(i){componentDraft.splice(i,1);renderComponentEditor()}
 async function saveComponents(){const {kind,id}=componentContext,source=kind==="recipe"?"Recipe Ingredients":"Batch Ingredients",key=kind==="recipe"?"Recipe ID":"Batch ID",keep=rows(source).filter(r=>String(val(source,r,key))!==String(id)),newRows=componentDraft.map(x=>headers(source).map(h=>kind==="recipe"?({"Recipe ID":id,"Component Type":x.type,"Component ID":x.id,"Component Name":x.name,"Quantity":Number(x.qty||0),"Unit":x.unit,"Unit Cost":0,"Cost Contribution":0,"Notes":""}[h]??""):({"Batch ID":id,"Ingredient ID":x.id,"Ingredient Name":x.name,"Quantity":Number(x.qty||0),"Unit":x.unit,"Unit Cost":0,"Cost Contribution":0}[h]??"")));db[source].rows=[...keep,...newRows];recalculateCosts();try{await persist();sync.textContent="Ingredients saved and costs recalculated"}catch(e){showReadOnly()}componentModal.close();render()}
 function filterCards(q,id){q=q.toLowerCase();document.querySelectorAll(`#${id} .searchable`).forEach(x=>x.classList.toggle("hidden",!x.textContent.toLowerCase().includes(q)))}
 function openForm(type,row=null){activeForm=forms[type];editRecord=row;modalTitle.textContent=(row?"Edit ":"Add ")+activeForm.title;modalHelp.textContent=activeForm.help;fields.innerHTML=activeForm.fields.map(h=>{const i=idx(activeForm.sheet,h),v=row&&i>=0?row[i]:"";return`<div class="field"><label>${h}</label>${h.includes("Notes")||h.includes("Instructions")?`<textarea name="${h}">${v}</textarea>`:`<input name="${h}" value="${v}" ${h==="Date"?'type="date"':""} ${h===activeForm.key?"required":""}>`}</div>`}).join("");modal.showModal()}
-async function persist(){localStorage.setItem(localDataKey,JSON.stringify(db))}
-function showReadOnly(){sync.textContent="Local save unavailable";notice.textContent="Browser storage is unavailable. This change remains only until the page is closed.";notice.classList.remove("hidden")}
+async function persist(){localStorage.setItem(localDataKey,JSON.stringify(db));await firebase.database().ref("appData").set(db)}
+function showReadOnly(){sync.textContent="Saved to offline browser cache";notice.textContent="Inaivu Firebase is temporarily unavailable. This change remains in this browser until the connection returns.";notice.classList.remove("hidden")}
 async function submitForm(e){e.preventDefault();const formType=Object.keys(forms).find(k=>forms[k]===activeForm),wasNew=!editRecord,rec=Object.fromEntries(new FormData(e.target).entries()),sheet=db[activeForm.sheet],row=sheet.headers.map(h=>rec[h]??"");if(activeForm.sheet==="Store Requests")row[sheet.headers.indexOf("Status")]="Pending";if(activeForm.log)sheet.rows.push(row);else{const ki=sheet.headers.indexOf(activeForm.key),found=sheet.rows.findIndex(r=>String(r[ki])===String(rec[activeForm.key]));if(found>=0)sheet.rows[found]=sheet.headers.map((h,i)=>Object.prototype.hasOwnProperty.call(rec,h)?row[i]:sheet.rows[found][i]);else sheet.rows.push(row)}syncMenuWithRecipes();recalculateCosts();try{await persist();sync.textContent="Saved and costs recalculated"}catch(err){showReadOnly()}modal.close();render();if(wasNew&&formType==="recipe")setTimeout(()=>openComponents("recipe",rec["Recipe ID"]),80)}
 boot();
 </script>
